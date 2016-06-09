@@ -1,7 +1,28 @@
+/*
+ * CSS stylesheet generated from "style.styl" using Stylus preprocessor.
+ */
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 a {
   color: #00b7ff;
+}
+.node {
+  fill: #ccc;
+}
+.node circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+  opacity: 1;
+}
+.node text {
+  fill: #000;
+  pointer-events: none;
+}
+line {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+  stroke-opacity: 1;
 }

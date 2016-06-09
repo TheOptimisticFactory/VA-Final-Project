@@ -3,9 +3,7 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
-    script
-        include ../public/javascripts/d3.min.js
-        include ../public/javascripts/crossfilter.min.js
-        include ../public/javascripts/dc.min.js
+    block header-scripts
   body
     block content
+    block body-scripts
