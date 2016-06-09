@@ -1,0 +1,3 @@
+- [D3.js v.3.5.17](https://d3js.org/)
+- [dc-js/dc-js v.2.0.0 beta 26](https://github.com/dc-js/dc.js)
+- [Square/Crossfilter v.1.3.12](https://github.com/square/crossfilter)
