@@ -8,16 +8,16 @@ var mouseOverFunction = function(d) {
             return isConnected(o, d) ? 1.0 : 0.2;
         })
         .style("fill", function(o) {
-            return generateFillColorForNodes(o,d);
+            return generateFillColorForNodes(o, d);
         });
 
-    link
+    path
         .transition(500)
         .style("stroke-opacity", function(o) {
             return o.source === d || o.target === d ? 1 : 0.2;
         })
         .attr("marker-end", function(o) {
-            return o.source === d || o.target === d ? "url(#arrowhead)" : "url()";
+            return o.source === d || o.target === d ? "url(#end)" : "url()";
         });
 
     circle
@@ -29,7 +29,7 @@ var mouseOverFunction = function(d) {
     labels
         .transition(500)
         .style("fill", function(o) {
-            return generateFillColorForLabels(o,d);
+            return generateFillColorForLabels(o, d);
         });
 };
 
@@ -46,7 +46,7 @@ var mouseOutFunction = function(d) {
             return '#aaa';
         });
 
-    link
+    path
         .transition(500)
         .style("stroke-opacity", function(o) {
             return 1.0;
@@ -84,28 +84,8 @@ function isEqual(a, b) {
     return a.index == b.index;
 }
 
-function tick() {
-    link
-        .attr("x1", function(d) {
-            return d.source.x;
-        })
-        .attr("y1", function(d) {
-            return d.source.y;
-        })
-        .attr("x2", function(d) {
-            return d.target.x;
-        })
-        .attr("y2", function(d) {
-            return d.target.y;
-        });
-
-    node
-        .attr("transform", function(d) {
-            return "translate(" + d.x + "," + d.y + ")";
-        });
-}
-
 function node_radius(d) {
+    if(d.size === undefined) { return 7; }
     return Math.pow(40.0 * d.size, 1 / 3);
 }
 
