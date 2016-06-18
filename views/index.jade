@@ -9,95 +9,138 @@ block header-scripts
 block content
   h1= title
   p Welcome to our visualization using Node, D3.js, Jade & Stylus
+
+  #dropdown
+      button.dropButton(onclick="myFunction()") Load dataset
+      #datasetDropdown.dropContent
+          a(href="#", onclick="loadDataset('simpleDemo')") Simple Demo
+          a(href="#", onclick="loadDataset('randomSet')") Random Set
+          a(href="#", onclick="loadDataset('miserables')") Misérables
+
   #d3-visualisation
 
 block body-scripts
   script(type='text/javascript').
-      var d3 = d3 || require('d3');
-      var element = typeof module !== 'undefined' && module.exports ? 'body' : '#d3-visualisation';
-
-      data = {
-          nodes: [
-              {size: 10, name: "Microsoft"},
-              {size: 5, name: "Oracle"},
-              {size: 2, name: "IBM"},
-              {size: 3, name: "Apple"},
-              {size: 30, name: "Sony"},
-              {size: 40, name :"Samsung"}
-          ],
-          links: [
-              {source: 0, target: 1},
-              {source: 0, target: 2},
-              {source: 1, target: 0},
-              {source: 3, target: 0},
-              {source: 4, target: 1}
-          ]
-      };
 
       var width = 1000;
       var height = 500;
-
-      var nodes = data.nodes;
-      var links = data.links;
-
-      var force = d3.layout.force()
-              .nodes(nodes)
-              .links(links)
-              .charge(-3000)
-              .friction(0.6)
-              .gravity(0.6)
-              .size([width, height])
-              .start();
-
       var linkedByIndex = {};
-      links.forEach(function (d) {
-          linkedByIndex[d.source.index + "," + d.target.index] = true;
-      });
+      var nodes, links, force, svg, link, path;
 
-      var svg = d3.select("body").append("svg")
-              .attr("width", width)
-              .attr("height", height);
+      var myFunction = function() {
+          document.getElementById("datasetDropdown").classList.toggle("show");
+      };
 
-      var link = svg.selectAll("line")
-              .data(links)
-              .enter().append("line");
+      var loadDataset = function(filename) {
+          console.log("LOADING DATASET: " + filename);
+          setupGraph(filename);
+      };
 
-      var node = svg.selectAll(".node")
-              .data(nodes)
-              .enter().append("g")
-              .attr("class", "node")
-              .call(force.drag);
+      window.onclick = function (event) {
+          if (!event.target.matches('.dropButton')) {
+              var dropdowns = document.getElementsByClassName("dropContent");
+              var i;
+              for (i = 0; i < dropdowns.length; i++) {
+                  var openDropdown = dropdowns[i];
+                  if (openDropdown.classList.contains('show')) {
+                      openDropdown.classList.remove('show');
+                  }
+              }
+          }
+      };
 
-      node
-              .append("circle")
-              .attr("r", node_radius)
-              .on("mouseover", mouseOverFunction)
-              .on("mouseout", mouseOutFunction);
+      function setupGraph(filename) {
 
-      node
-              .append("text")
-              .attr("x", 12)
-              .attr("dy", ".35em")
-              .text(function(d) { return d.name; });
+          var filepath = "/json/" + filename + ".json";
 
-      svg
-              .append("marker")
-              .attr("id", "arrowhead")
-              .attr("refX", 6 + 7) // Controls the shift of the arrow head along the path
-              .attr("refY", 2)
-              .attr("markerWidth", 6)
-              .attr("markerHeight", 4)
-              .attr("orient", "auto")
-              .append("path")
-              .attr("d", "M 0,0 V 4 L6,2 Z");
+          d3.select("svg").remove();
+          d3.json(filepath, function (error, data) {
+              if (error) throw error;
 
-      link
-              .attr("marker-end", "url()");
+              nodes = data.nodes;
+              links = data.links;
 
-      force
-              .on("tick", tick);
+              links.forEach(function (link) {
+                  linkedByIndex[link.source + "," + link.target] = true;
+                  link.source = nodes[link.source] || (nodes[link.source] = {name: link.source}) || (nodes[link.source] = {id: link.source});
+                  link.target = nodes[link.target] || (nodes[link.target] = {name: link.target}) || (nodes[link.target] = {id: link.target});
+                  link.value = +link.value;
+              });
 
-      // Export it using console command 'node index.js > out.svg'
-      if (typeof module !== 'undefined' && module.exports) {
-          module.exports = svg;
+              force = d3.layout.force()
+                      .nodes(d3.values(nodes))
+                      .links(links)
+                      .charge(-300)
+                      //.charge(-3000)
+                      //.friction(0.6)
+                      //.gravity(0.6)
+                      .linkDistance(60)
+                      .size([width, height])
+                      .on("tick", tick)
+                      .start();
+
+              svg = d3.select("#d3-visualisation").append("svg")
+                      .attr("width", width)
+                      .attr("height", height);
+
+              svg
+                      .append("svg:defs")
+                      .selectAll("marker")
+                      .data(["end"])
+                      .enter().append("svg:marker")
+                      .attr("id", String)
+                      .attr("viewBox", "0 -5 10 10")
+                      .attr("refX", 15)
+                      .attr("refY", -1.5)
+                      .attr("markerWidth", 6)
+                      .attr("markerHeight", 6)
+                      .attr("orient", "auto")
+                      .append("svg:path")
+                      .attr("d", "M0,-5L10,0L0,5");
+
+              path = svg.append("svg:g")
+                      .selectAll("path")
+                      .data(force.links())
+                      .enter().append("svg:path")
+                      .attr("class", "link")
+                      .attr("marker-end", "url()");
+
+              node = svg.selectAll(".node")
+                      .data(force.nodes())
+                      .enter().append("g")
+                      .attr("class", "node")
+                      .call(force.drag);
+
+              node
+                      .append("circle")
+                      .attr("r", node_radius)
+                      .on("mouseover", mouseOverFunction)
+                      .on("mouseout", mouseOutFunction);
+
+              node
+                      .append("text")
+                      .attr("x", 12)
+                      .attr("dy", ".35em")
+                      .text(function (d) {
+                          return d.name;
+                      });
+
+              function tick() {
+                  path
+                          .attr("d", function (d) {
+                              var dx = d.target.x - d.source.x, dy = d.target.y - d.source.y, dr = Math.sqrt(dx * dx + dy * dy);
+                              return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+                          });
+
+                  node
+                          .attr("transform", function (d) {
+                              return "translate(" + d.x + "," + d.y + ")";
+                          });
+              }
+
+              // Export it using console command 'node index.js > out.svg'
+              if (typeof module !== 'undefined' && module.exports) {
+                  module.exports = svg;
+              }
+          });
       }
