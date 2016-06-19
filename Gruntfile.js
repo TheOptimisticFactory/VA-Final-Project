@@ -4,8 +4,8 @@ module.exports = function(grunt) {
     nodeModuleDir: 'node_modules/',
     jsDir: 'public/javascripts/',
     cssDir: 'public/stylesheets/',
-    //jsDistDir: 'dist/javascripts/',
-    //cssDistDir: 'dist/stylesheets/',
+    jsDistDir: 'public/javascripts/minified/',
+    cssDistDir: 'public/stylesheets/minified/',
     pkg: grunt.file.readJSON('package.json'),
     copy: {
       js: {
@@ -61,26 +61,23 @@ module.exports = function(grunt) {
           separator: ';'
         },
         src: ['<%=jsDir%>*.js'],
-        //dest: '<%=jsDistDir%><%= pkg.name %>.js'
-        dest: '<%=jsDir%><%= pkg.name %>.js'
+        dest: '<%=jsDistDir%><%= pkg.name %>.js'
       },
       css: {
         src: ['<%=cssDir%>*.css'],
-        //dest: '<%=cssDistDir%><%= pkg.name %>.css'
-        dest: '<%=cssDir%><%= pkg.name %>.css'
+        dest: '<%=cssDistDir%><%= pkg.name %>.css'
       }
     },
     uglify: {
       options: {
+        mangle: false,
         sourceMap: true,
-        //sourceMapName: '<%=jsDistDir%><%= pkg.name %>.js.map',
-        sourceMapName: '<%=jsDir%><%= pkg.name %>.js.map',
+        sourceMapName: '<%=jsDistDir%><%= pkg.name %>.js.map',
         banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */'
       },
       dist: {
         files: {
-          //'<%=jsDistDir%><%= pkg.name %>.min.js': ['<%= concat.js.dest %>']
-          '<%=jsDir%><%= pkg.name %>.min.js': ['<%= concat.js.dest %>']
+          '<%=jsDistDir%><%= pkg.name %>.min.js': ['<%= concat.js.dest %>']
         }
       }
     },
@@ -90,8 +87,7 @@ module.exports = function(grunt) {
           banner: '/*! <%= pkg.name %> <%=grunt.template.today("dd-mm-yyyy") %> */\n'
         },
         files: {
-          //'<%=cssDistDir%><%= pkg.name %>.min.css': ['<%= concat.css.dest %>']
-          '<%=cssDir%><%= pkg.name %>.min.css': ['<%= concat.css.dest %>']
+          '<%=cssDistDir%><%= pkg.name %>.min.css': ['<%= concat.css.dest %>']
         }
       }
     },
@@ -108,7 +104,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('default', [
-    'copy',
     'concat',
     'uglify',
     'cssmin',
