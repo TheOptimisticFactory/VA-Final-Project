@@ -4,147 +4,189 @@ block header-scripts
     script(type='text/javascript', src='/javascripts/d3.min.js')
     script(type='text/javascript', src='/javascripts/crossfilter.min.js')
     script(type='text/javascript', src='/javascripts/dc.min.js')
+    script(type='text/javascript', src='/javascripts/jquery-3.0.0.min.js')
     script(type='text/javascript', src='/javascripts/graph.utils.js')
 
 block content
-  h1= title
-  p Welcome to our visualization using Node, D3.js, Jade & Stylus
+    h1= title
+    p Welcome to our visualization using Node, D3.js, Jade & Stylus
 
-  #dropdown
-      button.dropButton(onclick="myFunction()") Load dataset
-      #datasetDropdown.dropContent
-          a(href="#", onclick="loadDataset('simpleDemo')") Simple Demo
-          a(href="#", onclick="loadDataset('randomSet')") Random Set
-          a(href="#", onclick="loadDataset('miserables')") Misérables
+    #dropdown
+        button.dropButton(onclick="displayDropdown()") Load dataset
+        #datasetDropdown.dropContent
+            a(href="#", onclick="loadDataset('simpleDemo')") Simple Demo
+            a(href="#", onclick="loadDataset('randomSet')") Random Set
+            a(href="#", onclick="loadDataset('miserables')") Misérables
 
-  #d3-visualisation
+    #d3-visualisation
 
 block body-scripts
-  script(type='text/javascript').
+    script(type='text/javascript').
 
-      var width = 1000;
-      var height = 500;
-      var linkedByIndex = {};
-      var nodes, links, force, svg, link, path;
+        /*==========================================================================================*/
+        /*                                      CORE VARIABLES                                      */
+        /*==========================================================================================*/
 
-      var myFunction = function() {
-          document.getElementById("datasetDropdown").classList.toggle("show");
-      };
+        var width = 1000;
+        var height = 500;
+        var linkedByIndex = {};
+        var nodes, links, force, svg, link, path, brush, shiftKey;
 
-      var loadDataset = function(filename) {
-          console.log("LOADING DATASET: " + filename);
-          setupGraph(filename);
-      };
+        /*==========================================================================================*/
+        /*                                       DROPDOWN MENU                                      */
+        /*==========================================================================================*/
 
-      window.onclick = function (event) {
-          if (!event.target.matches('.dropButton')) {
-              var dropdowns = document.getElementsByClassName("dropContent");
-              var i;
-              for (i = 0; i < dropdowns.length; i++) {
-                  var openDropdown = dropdowns[i];
-                  if (openDropdown.classList.contains('show')) {
-                      openDropdown.classList.remove('show');
-                  }
-              }
-          }
-      };
+        // Function used to display dropdown menu
+        var displayDropdown = function() {
+            document.getElementById("datasetDropdown").classList.toggle("show");
+        };
 
-      function setupGraph(filename) {
+        // Function used to load specified dataset (json formatted using D3 rev3 syntax)
+        var loadDataset = function(filename) {
+            console.log("LOADING DATASET: " + filename);
+            setupGraph(filename);
+        };
 
-          var filepath = "/json/" + filename + ".json";
+        // Function used to hide dropdown menu when there a click elsewhere
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropButton')) {
+                var dropdowns = document.getElementsByClassName("dropContent");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        };
 
-          d3.select("svg").remove();
-          d3.json(filepath, function (error, data) {
-              if (error) throw error;
+        /*==========================================================================================*/
+        /*                                      CORE BEHAVIOUR                                      */
+        /*==========================================================================================*/
 
-              nodes = data.nodes;
-              links = data.links;
+        // Using JQuery, disable default right-click behaviour in D3 div (removes context-menu inside that div)
+        $("#d3-visualisation").bind('contextmenu', function (e) {
+            return false;
+        });
 
-              links.forEach(function (link) {
-                  linkedByIndex[link.source + "," + link.target] = true;
-                  link.source = nodes[link.source] || (nodes[link.source] = {name: link.source}) || (nodes[link.source] = {id: link.source});
-                  link.target = nodes[link.target] || (nodes[link.target] = {name: link.target}) || (nodes[link.target] = {id: link.target});
-                  link.value = +link.value;
-              });
+        /*==========================================================================================*/
+        /*                                      CORE BEHAVIOUR                                      */
+        /*==========================================================================================*/
 
-              force = d3.layout.force()
-                      .nodes(d3.values(nodes))
-                      .links(links)
-                      .charge(-300)
-                      //.charge(-3000)
-                      //.friction(0.6)
-                      //.gravity(0.6)
-                      .linkDistance(60)
-                      .size([width, height])
-                      .on("tick", tick)
-                      .start();
+        function setupGraph(filename) {
 
-              svg = d3.select("#d3-visualisation").append("svg")
-                      .attr("width", width)
-                      .attr("height", height)
-                      .call(d3.behavior.zoom().on("zoom", function() {
-                          svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-                      }))
-                      .append("g");
+            var filepath = "/json/" + filename + ".json";
 
-              svg
-                      .append("svg:defs")
-                      .selectAll("marker")
-                      .data(["end"])
-                      .enter().append("svg:marker")
-                      .attr("id", String)
-                      .attr("viewBox", "0 -5 10 10")
-                      .attr("refX", 15)
-                      .attr("refY", -1.5)
-                      .attr("markerWidth", 6)
-                      .attr("markerHeight", 6)
-                      .attr("orient", "auto")
-                      .append("svg:path")
-                      .attr("d", "M0,-5L10,0L0,5");
+            d3.select("svg").remove();
+            d3.json(filepath, function (error, data) {
+                if (error) throw error;
 
-              path = svg.append("svg:g")
-                      .selectAll("path")
-                      .data(force.links())
-                      .enter().append("svg:path")
-                      .attr("class", "link")
-                      .attr("marker-end", "url()");
+                svg = d3.select("#d3-visualisation")
+                //.attr("tabindex", 1)
+                        .on("keydown.brush", keydown)
+                        .on("keyup.brush", keyup)
+                        .each(function() { this.focus(); })
+                        .append("svg")
+                        .attr("width", width)
+                        .attr("height", height)
+                        .call(d3.behavior.zoom().on("zoom", function() {
+                            svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+                        }))
+                        .on("mousedown.zoom", null)
+                        //.on("touchstart.zoom", null)
+                        //.on("touchmove.zoom", null)
+                        //.on("touchend.zoom", null)
+                        .append("g");
 
-              node = svg.selectAll(".node")
-                      .data(force.nodes())
-                      .enter().append("g")
-                      .attr("class", "node")
-                      .call(force.drag);
+                brush = svg.append("g")
+                        .datum(function () {
+                            return {selected: false, previouslySelected: false};
+                        })
+                        .attr("class", "brush");
 
-              node
-                      .append("circle")
-                      .attr("r", node_radius)
-                      .on("mouseover", mouseOverFunction)
-                      .on("mouseout", mouseOutFunction);
+                brush.call(d3.svg.brush()
+                        .x(d3.scale.identity().domain([0, width]))
+                        .y(d3.scale.identity().domain([0, height]))
+                        .on("brushstart", brushStartFunction)
+                        .on("brush", brushFunction)
+                        .on("brushend", brushEndFunction)
+                );
 
-              node
-                      .append("text")
-                      .attr("x", 12)
-                      .attr("dy", ".35em")
-                      .text(function (d) {
-                          return d.name;
-                      });
+                nodes = data.nodes;
+                links = data.links;
 
-              function tick() {
-                  path
-                          .attr("d", function (d) {
-                              var dx = d.target.x - d.source.x, dy = d.target.y - d.source.y, dr = Math.sqrt(dx * dx + dy * dy);
-                              return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
-                          });
+                links.forEach(function (link) {
+                    linkedByIndex[link.source + "," + link.target] = true;
+                    link.source = nodes[link.source] || (nodes[link.source] = {name: link.source}) || (nodes[link.source] = {id: link.source});
+                    link.target = nodes[link.target] || (nodes[link.target] = {name: link.target}) || (nodes[link.target] = {id: link.target});
+                    link.value = +link.value;
+                });
 
-                  node
-                          .attr("transform", function (d) {
-                              return "translate(" + d.x + "," + d.y + ")";
-                          });
-              }
+                force = d3.layout.force()
+                        .nodes(d3.values(nodes))
+                        .links(links)
+                        .charge(-300)
+                        //.charge(-3000)
+                        //.friction(0.6)
+                        //.gravity(0.6)
+                        .linkDistance(60)
+                        .size([width, height])
+                        .on("tick", tick)
+                        .start();
 
-              // Export it using console command 'node index.js > out.svg'
-              if (typeof module !== 'undefined' && module.exports) {
-                  module.exports = svg;
-              }
-          });
-      }
+                svg
+                        .append("svg:defs")
+                        .selectAll("marker")
+                        .data(["end"])
+                        .enter().append("svg:marker")
+                        .attr("id", String)
+                        .attr("viewBox", "0 -5 10 10")
+                        .attr("refX", 15)
+                        .attr("refY", -1.5)
+                        .attr("markerWidth", 6)
+                        .attr("markerHeight", 6)
+                        .attr("orient", "auto")
+                        .append("svg:path")
+                        .attr("d", "M0,-5L10,0L0,5");
+
+                path = svg.append("svg:g")
+                        .selectAll("path")
+                        .data(force.links())
+                        .enter().append("svg:path")
+                        .attr("class", "link")
+                        .attr("marker-end", "url()");
+
+                node = svg.selectAll(".node")
+                        .data(force.nodes())
+                        .enter().append("g")
+                        .attr("class", "node")
+                        .call(force.drag);
+
+                node
+                        .append("circle")
+                        .attr("r", node_radius)
+                        .on("mouseover", mouseOverFunction)
+                        .on("mouseout", mouseOutFunction)
+                        .on("mousedown", mouseDownFunction)
+                        .on("mouseup", mouseUpFunction)
+                        .call(d3.behavior.drag()
+                                .on("dragstart", dragStartFunction)
+                                .on("drag", dragFunction)
+                                .on("dragend", dragEndFunction)
+                        );
+
+                node
+                        .append("text")
+                        .attr("x", 12)
+                        .attr("dy", ".35em")
+                        .text(function (d) {
+                            return d.name;
+                        });
+
+                // Export it using console command 'node index.js > out.svg'
+                if (typeof module !== 'undefined' && module.exports) {
+                    module.exports = svg;
+                }
+            });
+        }

@@ -6,11 +6,17 @@ body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+#d3-visualisation {
+  outline: none;
+}
 a {
   color: #00b7ff;
 }
 .node {
   fill: #ccc;
+}
+.node.selected circle {
+  stroke: #f00;
 }
 .node circle {
   stroke: #fff;
@@ -70,4 +76,9 @@ path.link {
 /* Show the dropdown menu (use JS to add this class to the .dropContent container when the user clicks on the dropdown button) */
 .show {
   display: block;
+}
+.brush .extent {
+  fill-opacity: 0.1;
+  stroke: #fff;
+  shape-rendering: crispEdges;
 }
