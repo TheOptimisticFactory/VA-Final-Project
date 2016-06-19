@@ -70,8 +70,11 @@ block body-scripts
             return false;
         });
 
+        // Loading initial sample dataset
+        setupGraph("simpleDemo");
+
         /*==========================================================================================*/
-        /*                                      CORE BEHAVIOUR                                      */
+        /*                                     D3 VISUALIZATION                                     */
         /*==========================================================================================*/
 
         function setupGraph(filename) {
