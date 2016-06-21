@@ -3,15 +3,51 @@
  * Rev 2.0
  */
 
-body
-  padding: 50px
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif
+/*==========================================================================================*/
+/*                                      CORE VARIABLES                                      */
+/*==========================================================================================*/
 
-#d3-visualisation
-  outline: none;
+body
+  color: black
+  padding: 50px
+  font: 14px
+  font-family: "Quando", freight-sans-pro, "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", "Lucida Grande", Helvetica, Arial, sans-serif
 
 a
   color: #00B7FF
+
+.h4-smaller
+  font-size: 1.15em
+
+#d3-visualisation
+  outline: none
+
+#customizationContainer
+  padding-left: 0
+
+.spacer
+  margin:0
+  padding:0
+  height:50px
+
+.deepshadow
+  text-shadow:
+    rgba(0,0,0,.2) 2px 6px 5px,
+    rgba(255,255,255,.4) 0 -4px 30px
+/*
+color:rgba(0,0,0,0.6)
+font-weight: 900
+*/
+
+@font-face
+  font-family: "Quando"
+  src: url('../fonts/Quando.ttf') format('truetype')
+  font-weight: normal
+  font-style: normal
+
+/*==========================================================================================*/
+/*                                         D3 STYLES                                        */
+/*==========================================================================================*/
 
 .node
   fill: #ccc
@@ -35,6 +71,14 @@ line, path.link
   stroke-width: 1.5px
   stroke-opacity: 1.0
 
+.brush .extent
+  fill-opacity: .1
+  stroke: #fff
+  shape-rendering: crispEdges
+
+/*==========================================================================================*/
+/*                                       DROPDOWN STYLES                                    */
+/*==========================================================================================*/
 
 /* Dropdown Button */
 .dropButton
@@ -44,10 +88,30 @@ line, path.link
   font-size: 16px
   border: none
   cursor: pointer
+  display: block
+  position: relative
+  text-decoration: none
+  -webkit-border-radius: 8px
+  -moz-border-radius: 8px
+  border-radius: 8px
+  -webkit-box-shadow: 0 9px 0 rgba(62,142,65,1), 0px 9px 25px rgba(0,0,0,.7)
+  -moz-box-shadow: 0 9px 0 rgba(62,142,65,1), 0px 9px 25px rgba(0,0,0,.7)
+  box-shadow: 0 9px 0 rgba(62,142,65,1), 0px 9px 25px rgba(0,0,0,.7)
+  -webkit-transition: all .1s ease
+  -moz-transition: all .1s ease
+  -ms-transition: all .1s ease
+  -o-transition: all .1s ease
+  transition: all .1s ease
 
 /* Dropdown button on hover & focus */
 .dropButton:hover, .dropButton:focus
   background-color: #3e8e41
+  box-shadow: 0 9px 0 rgba(52,119,54,1), 0px 9px 25px rgba(0,0,0,.7)
+
+.dropButton:active
+  -webkit-box-shadow: 0 3px 0 rgba(52,119,54,1), 0px 3px 6px rgba(0,0,0,.9)
+  -moz-box-shadow: 0 3px 0 rgba(52,119,54,1), 0px 3px 6px rgba(0,0,0,.9)
+  box-shadow: 0 3px 0 rgba(52,119,54,1), 0px 3px 6px rgba(0,0,0,.9)
 
 /* The container <div> - needed to position the dropdown content */
 .dropdown
@@ -59,8 +123,9 @@ line, path.link
   display: none
   position: absolute
   background-color: #f9f9f9
-  min-width: 160px
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2)
+  min-width: 200px
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2)
+  z-index: 999
 
 /* Links inside the dropdown */
 .dropContent a
@@ -75,9 +140,165 @@ line, path.link
 
 /* Show the dropdown menu (use JS to add this class to the .dropContent container when the user clicks on the dropdown button) */
 .show
-  display:block;
+  display:block
 
-.brush .extent
-  fill-opacity: .1
-  stroke: #fff
-  shape-rendering: crispEdges
+/*==========================================================================================*/
+/*                                     CUSTOMIZATION MENU                                   */
+/*==========================================================================================*/
+
+div.tabContainer
+  z-index: 10
+  background-color: #ffffff
+  padding: 0 !important
+  border-radius: 4px
+  -moz-border-radius: 4px
+  border:1px solid #ddd
+  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175)
+  box-shadow: 0 6px 12px rgba(0,0,0,.175)
+  -moz-box-shadow: 0 6px 12px rgba(0,0,0,.175)
+  background-clip: padding-box
+  opacity: 0.97
+  filter unquote("alpha(opacity=97)")
+
+div.tabMenu
+  padding-right: 0
+  padding-left: 0
+  padding-bottom: 0
+
+div.tabMenu div.list-group
+  margin-bottom: 0
+
+div.tabMenu div.list-group>a
+  margin-bottom: 0
+
+div.tabMenu div.list-group>a .glyphicon,
+div.tabMenu div.list-group>a .fa
+  color: #5A55A3
+
+div.tabMenu div.list-group>a:first-child
+  border-top-right-radius: 0
+  -moz-border-top-right-radius: 0
+
+div.tabMenu div.list-group>a:last-child
+  border-bottom-right-radius: 0
+  -moz-border-bottom-right-radius: 0
+
+div.tabMenu div.list-group>a.active,
+div.tabMenu div.list-group>a.active .glyphicon,
+div.tabMenu div.list-group>a.active .fa
+  background-color: #5A55A3
+  background-image: #5A55A3
+  color: #ffffff
+
+div.tabMenu div.list-group>a.active:after
+  content: ''
+  position: absolute
+  left: 100%
+  top: 50%
+  margin-top: -13px
+  border-left: 0
+  border-bottom: 13px solid transparent
+  border-top: 13px solid transparent
+  border-left: 10px solid #5A55A3
+
+div.tabContent
+  background-color: #ffffff
+  /* border: 1px solid #eeeeee; */
+  padding-left: 20px
+  padding-top: 10px
+
+div.customTab div.tabContent:not(.active)
+  display: none
+
+/*==========================================================================================*/
+/*                                   CUSTOMIZATION SLIDERS                                  */
+/*==========================================================================================*/
+
+h4.great
+  background: #00ac98
+  margin: 0 0 25px 0
+  padding: 7px 15px
+  color: #ffffff
+  font-size: 18px
+  //font-weight: 600
+  border-radius: 5px
+  display: inline-block
+  -moz-box-shadow:    2px 4px 5px 0 #ccc
+  -webkit-box-shadow: 2px 4px 5px 0 #ccc
+  box-shadow:         2px 4px 5px 0 #ccc
+
+.slider
+  margin-bottom: 70px
+
+.slider span
+  font-weight: 200
+  display: inline-block
+  color: #7f8c8d
+  font-size: 13px
+
+.price-box
+  margin: 0 auto
+  border-radius: 10px
+  padding: 40px 15px
+  width: 500px
+
+.ui-widget-content
+  border: 1px solid #bdc3c7
+  background: #e1e1e1
+  color: #222222
+  margin-top: 4px
+
+.ui-state-default, .ui-widget-content .ui-state-default
+  background:transparent !important
+  border:none !important
+
+label {
+  max-width: 110%
+}
+
+.sliderBar
+  width: 82%
+  margin-left: 15px
+
+.ui-slider .ui-slider-handle label
+  background: #428bca
+  border-radius: 20px
+  width:6.2em
+
+.ui-slider .ui-slider-handle
+  position: absolute
+  z-index: 2
+  width: 5.2em
+  height: 100px
+  cursor: default
+  margin: 0 -40px auto !important
+  text-align: center
+  line-height: 35px
+  color: #FFFFFF
+  font-size: 15px
+
+.ui-slider .ui-slider-handle .glyphicon
+  color: #FFFFFF
+  margin: 0 3px
+  font-size: 11px
+  opacity: 0.5
+
+.ui-corner-all
+  border-radius: 20px
+
+.ui-slider-horizontal .ui-slider-handle
+  top: -.9em
+
+.ui-state-default, .ui-widget-content .ui-state-default
+  border: 1px solid #f9f9f9
+  background: #3498db
+
+.ui-slider-horizontal .ui-slider-handle
+  margin-left: -0.5em
+
+.ui-slider .ui-slider-handle
+  cursor: pointer
+
+.ui-slider a, .ui-slider a:focus
+  cursor: pointer
+  outline: none

@@ -1,26 +1,71 @@
 extends layout
 
 block header-scripts
+
+block content
+    .container-fluid
+
+        #menu.col-md-4
+            #intro.col-md-12
+                h1 #{title}
+                p Welcome to our visualization using Node, D3.js, Jade & Stylus
+
+            .spacer
+
+            #dropdown.col-md-12
+                button(onclick="displayDropdown()").deepshadow.dropButton.dropdownActuator
+                    | Currently displaying #[span#datasetName.dropdownActuator REPLACE ME]
+                    | <br/><br/>
+                    | Available data-sets #[span(aria-hidden="true").glyphicon.glyphicon-triangle-bottom.dropdownActuator]
+                #datasetDropdown.col-md-3.dropContent
+                    a(href="#", onclick="loadDataset('SimpleDemo')") Simple Demo
+                    a(href="#", onclick="loadDataset('RandomSet')") Random Set
+                    a(href="#", onclick="loadDataset('Miserables')") Misérables
+
+                .spacer
+
+            #customizationMenu.col-md-12
+                #customizationContainer.container
+                    .col-lg-5.col-md-5.col-sm-8.col-xs-9.tabContainer
+                        .col-lg-3.col-md-3.col-sm-3.col-xs-3.tabMenu
+                            .list-group
+                                a(href="#").list-group-item.text-center.active
+                                    h4.h4-smaller #[span(aria-hidden="true").fa.fa-lg.fa-circle]<br/><br/>Nodes
+                                a(href="#").list-group-item.text-center
+                                    h4.h4-smaller #[span(aria-hidden="true").fa.fa-lg.fa-code-fork]<br/><br/>Edges
+                                a(href="#").list-group-item.text-center
+                                    h4.h4-smaller #[span(aria-hidden="true").fa.fa-lg.fa-magnet]<br/><br/>Force Layout
+                                a(href="#").list-group-item.text-center
+                                    h4.h4-smaller #[span(aria-hidden="true").fa.fa-lg.fa-question]<br/><br/>Category
+                        .col-lg-9.col-md-9.col-sm-9.col-xs-9.customTab
+                            .tabContent.slider.active
+                                h4.great Node size multiplier
+                                .col-sm-12.sliderBar
+                                    #nodeSize
+                            .tabContent.slider
+                                h4.great Edge length
+                                .col-sm-12.sliderBar
+                                    #edgeLength
+                                .spacer
+                                h4.great Edge strength
+                                .col-sm-12.sliderBar
+                                    #edgeStrength
+                            .tabContent.slider
+                                h4.great Force layout charge
+                                .col-sm-12.sliderBar
+                                    #forceCharge
+
+        #d3-visualisation.col-md-8
+
+block body-scripts
     script(type='text/javascript', src='/javascripts/d3.min.js')
     script(type='text/javascript', src='/javascripts/crossfilter.min.js')
     script(type='text/javascript', src='/javascripts/dc.min.js')
-    script(type='text/javascript', src='/javascripts/jquery-3.0.0.min.js')
+    script(type='text/javascript', src='/javascripts/jquery-1.9.1.min.js')
+    script(type='text/javascript', src='/javascripts/jqueryUI-1.10.4.min.js')
+    script(type='text/javascript', src='/javascripts/bootstrap-3.3.6.min.js')
     script(type='text/javascript', src='/javascripts/graph.utils.js')
 
-block content
-    h1= title
-    p Welcome to our visualization using Node, D3.js, Jade & Stylus
-
-    #dropdown
-        button.dropButton(onclick="displayDropdown()") Load dataset
-        #datasetDropdown.dropContent
-            a(href="#", onclick="loadDataset('simpleDemo')") Simple Demo
-            a(href="#", onclick="loadDataset('randomSet')") Random Set
-            a(href="#", onclick="loadDataset('miserables')") Misérables
-
-    #d3-visualisation
-
-block body-scripts
     script(type='text/javascript').
 
         /*==========================================================================================*/
@@ -29,8 +74,16 @@ block body-scripts
 
         var width = 1000;
         var height = 500;
+        var nodes, links, force, forceLabels, svg, link, path, brush, shiftKey, datasetName;
+
         var linkedByIndex = {};
-        var nodes, links, force, svg, link, path, brush, shiftKey;
+        var labelAnchors = [];
+        var labelAnchorLinks = [];
+
+        var radiusMultiplier = 1;
+        var linkDistance = 60;
+        var linkStrength = 1;
+        var forceCharge = 60;
 
         /*==========================================================================================*/
         /*                                       DROPDOWN MENU                                      */
@@ -43,13 +96,13 @@ block body-scripts
 
         // Function used to load specified dataset (json formatted using D3 rev3 syntax)
         var loadDataset = function(filename) {
-            console.log("LOADING DATASET: " + filename);
+            $('#datasetName').html(filename);
             setupGraph(filename);
         };
 
         // Function used to hide dropdown menu when there a click elsewhere
         window.onclick = function (event) {
-            if (!event.target.matches('.dropButton')) {
+            if (!event.target.matches('.dropdownActuator')) {
                 var dropdowns = document.getElementsByClassName("dropContent");
                 var i;
                 for (i = 0; i < dropdowns.length; i++) {
@@ -71,7 +124,7 @@ block body-scripts
         });
 
         // Loading initial sample dataset
-        setupGraph("simpleDemo");
+        loadDataset("SimpleDemo");
 
         /*==========================================================================================*/
         /*                                     D3 VISUALIZATION                                     */
@@ -134,7 +187,7 @@ block body-scripts
                         //.charge(-3000)
                         //.friction(0.6)
                         //.gravity(0.6)
-                        .linkDistance(60)
+                        .linkDistance(linkDistance)
                         .size([width, height])
                         .on("tick", tick)
                         .start();
@@ -226,3 +279,92 @@ block body-scripts
           
           return groupNodes;
         }
+
+        /*==========================================================================================*/
+        /*                                   CUSTOMIZATION SLIDERS                                  */
+        /*==========================================================================================*/
+
+        $("div.tabMenu>div.list-group>a").click(function (e) {
+            console.log("TEST");
+            e.preventDefault();
+            $(this).siblings('a.active').removeClass("active");
+            $(this).addClass("active");
+            var index = $(this).index();
+            var tabContent = $("div.customTab>div.tabContent");
+            tabContent.removeClass("active");
+            tabContent.eq(index).addClass("active");
+        });
+
+        function update(slider, value) {
+            $(slider).find("a").html('<label><span class="glyphicon glyphicon-chevron-left"></span> ' + value + ' <span class="glyphicon glyphicon-chevron-right"></span></label>');
+        }
+
+        var slider_nodeSize = $("#nodeSize");
+        var slider_edgeLength = $("#edgeLength");
+        var slider_edgeStrength = $("#edgeStrength");
+        var slider_forceCharge = $("#forceCharge");
+
+        slider_nodeSize.slider({
+            animate: true,
+            value: 1,
+            min: 0.1,
+            max: 10,
+            step: 0.1,
+            slide: function (event, ui) {
+                update(this, ui.value);
+                radiusMultiplier = ui.value;
+                d3.select("#d3-visualisation").selectAll("circle").transition().attr("r", node_radius);
+                /*d3.select("#d3-visualisation").selectAll("text").attr("transform", function (d) {
+                 console.log("Translating : ", d.x * radiusMultiplier, " & ", d.y * radiusMultiplier);
+                 return "translate(" + d.x + radiusMultiplier + "," + d.y * radiusMultiplier + ")";
+                 });*/
+                force.start();
+            }
+        });
+
+        slider_edgeLength.slider({
+            animate: true,
+            value: 60,
+            min: 1,
+            max: 500,
+            step: 1,
+            slide: function (event, ui) {
+                update(this, ui.value);
+                linkDistance = ui.value;
+                force.linkDistance(linkDistance);
+                force.start();
+            }
+        });
+
+        slider_edgeStrength.slider({
+            animate: true,
+            value: 1,
+            min: 0,
+            max: 1,
+            step: 0.05,
+            slide: function (event, ui) {
+                update(this, ui.value);
+                linkStrength = ui.value;
+                force.linkStrength(linkStrength);
+                force.start();
+            }
+        });
+
+        slider_forceCharge.slider({
+            animate: true,
+            value: -300,
+            min: -500,
+            max: 500,
+            step: 1,
+            slide: function (event, ui) {
+                update(this, ui.value);
+                forceCharge = ui.value;
+                force.charge(forceCharge);
+                force.start();
+            }
+        });
+
+        update(slider_nodeSize, radiusMultiplier);
+        update(slider_edgeLength, linkDistance);
+        update(slider_edgeStrength, linkStrength);
+        update(slider_forceCharge, forceCharge);
