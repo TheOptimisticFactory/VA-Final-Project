@@ -115,16 +115,17 @@ block body-scripts
                         .on("brush", brushFunction)
                         .on("brushend", brushEndFunction)
                 );
-
-                nodes = data.nodes;
+                
+                
+                nodes = initGroupNodes(data.nodes);
                 links = data.links;
-
+                
                 links.forEach(function (link) {
                     linkedByIndex[link.source + "," + link.target] = true;
                     link.source = nodes[link.source] || (nodes[link.source] = {name: link.source}) || (nodes[link.source] = {id: link.source});
                     link.target = nodes[link.target] || (nodes[link.target] = {name: link.target}) || (nodes[link.target] = {id: link.target});
                     link.value = +link.value;
-                });
+                });                               
 
                 force = d3.layout.force()
                         .nodes(d3.values(nodes))
@@ -192,4 +193,36 @@ block body-scripts
                     module.exports = svg;
                 }
             });
+        }
+        
+        //takes JSON nodes
+        //gives (D3 group nodes + D3 standard nodes)
+        function initGroupNodes(nodes)
+        {
+          var i = 0;
+          var groupNodes = nodes.slice();
+          
+          //creating groupe nodes
+          while(i < groupNodes.length) {
+            var currentNode = groupNodes[i];          
+
+            if(groupId = currentNode['group'])
+            {
+            	//finding associated groupNode or creating it
+              var groupNode = groupNodes.find(function(obj){ return obj.name === 'group' + groupId; });              
+              if(!groupNode)
+              	groupNodes.push({'name' : 'group' + groupId, 'innerNodes' : [ currentNode['name'] ]});
+              else 
+              	groupNode['innerNodes'].push(currentNode['name']);
+              
+              //removing element at index i
+            	groupNodes.splice(i, 1);
+            }
+            else
+            {
+            	i++;
+            }
+          }
+          
+          return groupNodes;
         }
