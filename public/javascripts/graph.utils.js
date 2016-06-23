@@ -229,9 +229,13 @@ function keyup() {
 
 function findNode(id) {
     var forceNodes = force.nodes();
+    var node = [];
+
     for (var i in forceNodes) {
-        if(forceNodes[i]["name"] == id || forceNodes[i]["id"]) {
-            return forceNodes[i];
+        if(forceNodes[i]["name"] == id || forceNodes[i]["id"] == id) {
+            node["index"] = i;
+            node["object"] = forceNodes[i];
+            return node;
         }
     }
     return null;

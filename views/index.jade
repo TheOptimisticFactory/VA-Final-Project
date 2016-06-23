@@ -189,15 +189,21 @@ block body-scripts
                         .on("tick", tick);
 
                 data.links.forEach(function (link) {
-                    if (findNode(link.source) != null && findNode(link.target) != null) {
+                    var source = findNode(link.source),
+                        target = findNode(link.target);
+
+                    if (source !== null && target != null) {
                         force.links().push({
-                            "source": findNode(link.source),
-                            "target": findNode(link.target)
+                            "source": source["object"],
+                            "target": target["object"]
+                        });
+                        linkedByIndex[source["index"] + "," + source["target"]] = true;
+                    } else if(Number.isInteger(link.source) && Number.isInteger(link.target)) {
+                        force.links().push({
+                            "source": link.source,
+                            "target": link.target
                         });
                         linkedByIndex[link.source + "," + link.target] = true;
-                        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source}) || (nodes[link.source] = {id: link.source});
-                        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target}) || (nodes[link.target] = {id: link.target});
-                        link.value = +link.value;
                     }
                 });
 
