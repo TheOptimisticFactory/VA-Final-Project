@@ -9,22 +9,25 @@ block content
             #intro.col-md-12
                 h1 #{title}
                 p Welcome to our visualization using Node, D3.js, Jade & Stylus
-
-            .spacer
-
-            #dropdown.col-md-12
-                button(onclick="displayDropdown()").deepshadow.dropButton.dropdownActuator
-                    | Currently displaying #[span#datasetName.dropdownActuator REPLACE ME]
-                    | <br/><br/>
-                    | Available data-sets #[span(aria-hidden="true").glyphicon.glyphicon-triangle-bottom.dropdownActuator]
-                #datasetDropdown.col-md-3.dropContent
-                    a(href="#", onclick="loadDataset('SimpleDemo')") Simple Demo
-                    a(href="#", onclick="loadDataset('RandomSet')") Random Set
-                    a(href="#", onclick="loadDataset('Miserables')") Misérables
-
                 .spacer
 
-            #customizationMenu.col-md-12
+            #dropdown.col-md-12
+
+                #datasetButton.col-md-8
+                    button(onclick="displayDropdown()").deepshadow.dropButton.dropdownActuator
+                        | Currently displaying #[span#datasetName.dropdownActuator REPLACE ME]
+                        | <br/><br/>
+                        | Available data-sets #[span(aria-hidden="true").glyphicon.glyphicon-triangle-bottom.dropdownActuator]
+                    #datasetDropdown.col-md-10.dropContent
+                        a(href="#", onclick="loadDataset('SimpleDemo')") Simple Demo
+                        a(href="#", onclick="loadDataset('RandomSet')") Random Set
+                        a(href="#", onclick="loadDataset('Miserables')") Misérables
+                    .spacer
+
+                #settingsButton.col-md-4
+                    button(onclick="toggleSettings()").deepshadow.dropButton.dropdownActuator Settings #[span(aria-hidden="true").fa.fa-cog]
+
+            #customizationMenu(style="display:none;").col-md-12
                 #customizationContainer.container
                     .col-lg-5.col-md-5.col-sm-8.col-xs-9.tabContainer
                         .col-lg-3.col-md-3.col-sm-3.col-xs-3.tabMenu
@@ -55,7 +58,8 @@ block content
                                 .col-sm-12.sliderBar
                                     #forceCharge
 
-        #d3-visualisation.col-md-8
+        #d3-container.col-md-8
+            #d3-visualisation
 
 block body-scripts
     script(type='text/javascript', src='/javascripts/d3.min.js')
@@ -72,8 +76,8 @@ block body-scripts
         /*                                      CORE VARIABLES                                      */
         /*==========================================================================================*/
 
-        var width = 1000;
-        var height = 500;
+        var height = $(window).height() * 0.9;
+        var width = $(window).width() * 0.6;
         var nodes, links, force, forceLabels, svg, link, path, brush, shiftKey, datasetName;
 
         var linkedByIndex = {};
@@ -146,6 +150,9 @@ block body-scripts
                         .append("svg")
                         .attr("width", width)
                         .attr("height", height)
+                        .attr("viewBox", "0 0 " + width + " " + height)
+                        .attr("preserveAspectRatio", "xMidYMid meet")
+                        .classed("svg-content", true)
                         .call(d3.behavior.zoom().on("zoom", function() {
                             svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
                         }))
@@ -168,8 +175,7 @@ block body-scripts
                         .on("brush", brushFunction)
                         .on("brushend", brushEndFunction)
                 );
-                
-                
+
                 nodes = initGroupNodes(data.nodes);
                 links = data.links;
                 
@@ -285,7 +291,6 @@ block body-scripts
         /*==========================================================================================*/
 
         $("div.tabMenu>div.list-group>a").click(function (e) {
-            console.log("TEST");
             e.preventDefault();
             $(this).siblings('a.active').removeClass("active");
             $(this).addClass("active");
@@ -368,3 +373,11 @@ block body-scripts
         update(slider_edgeLength, linkDistance);
         update(slider_edgeStrength, linkStrength);
         update(slider_forceCharge, forceCharge);
+
+        /*==========================================================================================*/
+        /*                                     DYNAMIC D3 SIZING                                    */
+        /*==========================================================================================*/
+
+        function toggleSettings() {
+            $("#customizationMenu").fadeToggle();
+        }

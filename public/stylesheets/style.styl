@@ -76,6 +76,20 @@ line, path.link
   stroke: #fff
   shape-rendering: crispEdges
 
+.svg-container
+  display: inline-block
+  position: relative
+  width: 100%
+  padding-bottom: 100%
+  vertical-align: top
+  overflow: hidden
+
+.svg-content
+  display: inline-block
+  position: absolute
+  top: 0
+  left: 0
+
 /*==========================================================================================*/
 /*                                       DROPDOWN STYLES                                    */
 /*==========================================================================================*/
@@ -126,6 +140,8 @@ line, path.link
   min-width: 200px
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2)
   z-index: 999
+  margin-left: 14px
+  text-align: center
 
 /* Links inside the dropdown */
 .dropContent a
@@ -145,6 +161,9 @@ line, path.link
 /*==========================================================================================*/
 /*                                     CUSTOMIZATION MENU                                   */
 /*==========================================================================================*/
+
+#settingsButton
+  margin-top: 21px
 
 div.tabContainer
   z-index: 10
