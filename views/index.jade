@@ -78,11 +78,10 @@ block body-scripts
 
         var height = $(window).height() * 0.9;
         var width = $(window).width() * 0.6;
+
         var nodes, links, force, forceLabels, svg, link, path, brush, shiftKey, datasetName;
 
         var linkedByIndex = {};
-        var labelAnchors = [];
-        var labelAnchorLinks = [];
 
         var radiusMultiplier = 1;
         var linkDistance = 60;
@@ -94,22 +93,21 @@ block body-scripts
         /*==========================================================================================*/
 
         // Function used to display dropdown menu
-        var displayDropdown = function() {
+        function displayDropdown() {
             document.getElementById("datasetDropdown").classList.toggle("show");
-        };
+        }
 
         // Function used to load specified dataset (json formatted using D3 rev3 syntax)
-        var loadDataset = function(filename) {
+        function loadDataset(filename) {
             $('#datasetName').html(filename);
             setupGraph(filename);
-        };
+        }
 
         // Function used to hide dropdown menu when there a click elsewhere
         window.onclick = function (event) {
             if (!event.target.matches('.dropdownActuator')) {
                 var dropdowns = document.getElementsByClassName("dropContent");
-                var i;
-                for (i = 0; i < dropdowns.length; i++) {
+                for (var i = 0; i < dropdowns.length; i++) {
                     var openDropdown = dropdowns[i];
                     if (openDropdown.classList.contains('show')) {
                         openDropdown.classList.remove('show');
@@ -137,6 +135,8 @@ block body-scripts
         function setupGraph(filename) {
 
             var filepath = "/json/" + filename + ".json";
+
+            linkedByIndex = {};
 
             d3.select("svg").remove();
             d3.json(filepath, function (error, data) {
@@ -307,7 +307,7 @@ block body-scripts
             tabContent.eq(index).addClass("active");
         });
 
-        function update(slider, value) {
+        function updateSliderHandle(slider, value) {
             $(slider).find("a").html('<label><span class="glyphicon glyphicon-chevron-left"></span> ' + value + ' <span class="glyphicon glyphicon-chevron-right"></span></label>');
         }
 
@@ -323,7 +323,7 @@ block body-scripts
             max: 10,
             step: 0.1,
             slide: function (event, ui) {
-                update(this, ui.value);
+                updateSliderHandle(this, ui.value);
                 radiusMultiplier = ui.value;
                 d3.select("#d3-visualisation").selectAll("circle").transition().attr("r", node_radius);
                 /*d3.select("#d3-visualisation").selectAll("text").attr("transform", function (d) {
@@ -341,7 +341,7 @@ block body-scripts
             max: 500,
             step: 1,
             slide: function (event, ui) {
-                update(this, ui.value);
+                updateSliderHandle(this, ui.value);
                 linkDistance = ui.value;
                 force.linkDistance(linkDistance);
                 force.start();
@@ -355,7 +355,7 @@ block body-scripts
             max: 1,
             step: 0.05,
             slide: function (event, ui) {
-                update(this, ui.value);
+                updateSliderHandle(this, ui.value);
                 linkStrength = ui.value;
                 force.linkStrength(linkStrength);
                 force.start();
@@ -369,17 +369,17 @@ block body-scripts
             max: 500,
             step: 1,
             slide: function (event, ui) {
-                update(this, ui.value);
+                updateSliderHandle(this, ui.value);
                 forceCharge = ui.value;
                 force.charge(forceCharge);
                 force.start();
             }
         });
 
-        update(slider_nodeSize, radiusMultiplier);
-        update(slider_edgeLength, linkDistance);
-        update(slider_edgeStrength, linkStrength);
-        update(slider_forceCharge, forceCharge);
+        updateSliderHandle(slider_nodeSize, radiusMultiplier);
+        updateSliderHandle(slider_edgeLength, linkDistance);
+        updateSliderHandle(slider_edgeStrength, linkStrength);
+        updateSliderHandle(slider_forceCharge, forceCharge);
 
         /*==========================================================================================*/
         /*                                     DYNAMIC D3 SIZING                                    */
