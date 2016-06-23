@@ -226,3 +226,13 @@ function keydown() {
 function keyup() {
     shiftKey = d3.event.shiftKey || d3.event.metaKey;
 }
+
+function findNode(id) {
+    var forceNodes = force.nodes();
+    for (var i in forceNodes) {
+        if(forceNodes[i]["name"] == id || forceNodes[i]["id"]) {
+            return forceNodes[i];
+        }
+    }
+    return null;
+}
