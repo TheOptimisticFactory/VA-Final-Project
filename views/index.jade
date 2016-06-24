@@ -135,7 +135,10 @@ block body-scripts
                         var length = nodeHierarchy.push({
                             'name': 'Group_n°' + groupId,
                             'collapsed': false,
-                            'children': []
+                            'children': [],
+                            'size': 7,
+                            'sizeExpanded': 7,
+                            'sizeCollapsed': 7
                         });
                         parentNode = [];
                         parentNode["index"] = length - 1;
@@ -144,6 +147,8 @@ block body-scripts
                     }
 
                     childrenNodesIndexes.push(i);
+                    parentNode["object"]["size"] += 1.5;
+                    parentNode["object"]["sizeCollapsed"] += 1.5;
                     parentNode["object"]['children'].push(currentNode);
                     currentNode["parent"] = parentNode["object"];
 
@@ -326,9 +331,10 @@ block body-scripts
         function click(d) {
             if(d.children) {
                 d.collapsed = !d.collapsed;
+                d.size = d.collapsed ? d.sizeCollapsed : d.sizeExpanded;
+                console.log("Size of ", d, " is now ", d.size, " REFS: >", d.sizeCollapsed, d.sizeExpanded);
 
                 var visibility = d.collapsed ? "none" : "initial";
-
                 d.children.forEach(function (childNode) {
                     d3.select('#' + escapeId(childNode.name)).transition(200).style("display", visibility);
                 });
