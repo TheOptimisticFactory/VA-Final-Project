@@ -306,8 +306,12 @@ block body-scripts
                         });
 
                 superNodesIndexes.forEach(function (d) {
-                    click(force.nodes()[d]);
+                    var currentSupernode = force.nodes()[d];
+                    d3.select('#' + escapeId(currentSupernode.name)).attr("class", "supernode");
+                    d3.select('#' + escapeId(currentSupernode.name)).select("text").attr("class", "supernode-label");
+                    click(currentSupernode);
                 });
+
                 // Export it using console command 'node index.js > out.svg'
                 if (typeof module !== 'undefined' && module.exports) {
                     module.exports = svg;

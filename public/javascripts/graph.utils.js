@@ -77,6 +77,10 @@ function isEqual(a, b) {
 }
 
 function generateFillColorForNodes(o, d) {
+    if(o.collapsed !== undefined) {
+        return "#6B00B6";
+    }
+
     if (isConnectedAsTarget(o, d) && isConnectedAsSource(o, d)) {
         fillcolor = 'green';
     } else if (isConnectedAsSource(o, d)) {
@@ -92,6 +96,10 @@ function generateFillColorForNodes(o, d) {
 }
 
 function generateFillColorForLabels(o, d) {
+    if(o.collapsed !== undefined) {
+        return "#4B0082";
+    }
+
     if (isConnectedAsTarget(o, d) && isConnectedAsSource(o, d)) {
         fillcolor = 'green';
     } else if (isConnectedAsSource(o, d)) {
@@ -151,6 +159,9 @@ function mouseOutFunction (d) {
             return 1.0;
         })
         .style("fill", function(o) {
+            if(o.collapsed !== undefined) {
+                return "#6B00B6";
+            }
             return '#aaa';
         });
 
@@ -172,6 +183,9 @@ function mouseOutFunction (d) {
     labels
         .transition(500)
         .style("fill", function(o) {
+            if(o.collapsed !== undefined) {
+                return "#303";
+            }
             return 'black';
         });
 }
