@@ -239,3 +239,7 @@ function findNode(nodeCollection, id) {
     }
     return null;
 }
+
+function inArray(value, array) {
+    return array.indexOf(value) > -1;
+}

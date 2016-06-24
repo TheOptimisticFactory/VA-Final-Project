@@ -79,9 +79,7 @@ block body-scripts
         var height = $(window).height() * 0.9;
         var width = $(window).width() * 0.6;
 
-        var nodes, links, force, forceLabels, svg, link, path, brush, shiftKey, datasetName;
-
-        var linkedByIndex = {};
+        var root, nodes, links, force, forceLabels, svg, link, path, brush, shiftKey, datasetName, linkedByIndex, superNodesIndexes;
 
         var radiusMultiplier = 1;
         var linkDistance = 60;
@@ -137,6 +135,8 @@ block body-scripts
             var filepath = "/json/" + filename + ".json";
 
             linkedByIndex = {};
+            superNodesIndexes = [];
+            childrenNodesIndexes = [];
 
             d3.select("svg").remove();
             d3.json(filepath, function (error, data) {
@@ -235,11 +235,13 @@ block body-scripts
                         .data(force.nodes())
                         .enter().append("g")
                         .attr("class", "node")
+                        .attr("id", function(d) { return d.name; })
                         .call(force.drag);
 
                 node
                         .append("circle")
                         .attr("r", node_radius)
+                        .on("click", click)
                         .on("mouseover", mouseOverFunction)
                         .on("mouseout", mouseOutFunction)
                         .on("mousedown", mouseDownFunction)
@@ -278,13 +280,16 @@ block body-scripts
 
                     var parentNode = findNode(nodeHierarchy, 'Group n°' + groupId);
                     if (!parentNode) {
-                        var length = nodeHierarchy.push({'name': 'Group n°' + groupId, 'children': []});
+                        var length = nodeHierarchy.push({'name': 'Group n°' + groupId, 'collapsed': false, class:"test", 'children': []});
                         parentNode = [];
                         parentNode["index"] = length - 1;
                         parentNode["object"] = nodeHierarchy[length - 1];
+                        superNodesIndexes.push(length - 1);
                     }
 
+                    childrenNodesIndexes.push(i);
                     parentNode["object"]['children'].push(currentNode);
+                    currentNode["parent"] = parentNode["object"];
 
                     if(currentNode.hasOwnProperty("name")) {
                         data.links.push({
@@ -299,16 +304,42 @@ block body-scripts
                     } else {
                         data.links.push({
                             "source": parentNode["index"],
-                            "target": i});
+                            "target": i
+                        });
                     }
                 }
             }
             return nodeHierarchy;
         }
+
+        function click(d) {
+            if(d.children) {
+                d.collapsed = !d.collapsed;
+
+                var visibility = d.collapsed ? "none" : "initial";
+
+                d.children.forEach(function (childNode) {
+                    var id = childNode.name;
+                    d3.select('#' + id.replace(".", "\\.")).transition(200).style("display", visibility);
+                });
+
+                path
+                    .transition(200)
+                    .style("display", function (o) {
+                        var hidden = false;
+                        if(inArray(o.source.index, childrenNodesIndexes)) {
+                            hidden = hidden || (o.source["parent"]["collapsed"] === true);
+                        }
+
+                        if (inArray(o.target.index, childrenNodesIndexes)) {
+                            hidden = hidden || (o.target["parent"]["collapsed"] === true);
+                        }
+
+                        return hidden ? "none" : "initial";
+                    });
+
+                force.start();
             }
-          }
-          
-          return groupNodes;
         }
 
         /*==========================================================================================*/
