@@ -1,11 +1,11 @@
 {
   "nodes": [
     {"name": "Microsoft", "size": 10}, 
-    {"name": "Oracle", "size": 5}, 
-    {"name": "IBM", "size": 2}, 
-    {"name": "Apple", "size": 3}, 
-    {"name": "Sony", "size": 30}, 
-    {"name" :"Samsung", "size": 40} 
+    {"name": "Oracle", "size": 7}, 
+    {"name": "IBM", "size": 5}, 
+    {"name": "Apple", "size": 8}, 
+    {"name": "Sony", "size": 12}, 
+    {"name" :"Samsung", "size": 20} 
   ],
   "links": [
     {"source": 0, "target": 1}, 

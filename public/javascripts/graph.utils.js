@@ -229,8 +229,10 @@ function dragEndFunction() {
 /*==========================================================================================*/
 
 function node_radius(d) {
-    if(d.size === undefined) { return 7 * radiusMultiplier; }
-    return Math.pow(40.0 * d.size, 1 / 3) * radiusMultiplier;
+    if(d.size === undefined) {
+        return 7 * radiusMultiplier;
+    }
+    return d.size * radiusMultiplier;
 }
 
 function keydown() {
