@@ -123,6 +123,51 @@ block body-scripts
             return false;
         });
 
+        //takes JSON nodes gives (D3 group nodes + D3 standard nodes)
+        function createNodeHierarchy(data) {
+            var nodeHierarchy = data.nodes.slice(0);
+            for (var i = 0; i < nodeHierarchy.length; i++) {
+                var currentNode = nodeHierarchy[i];
+                if ((groupId = currentNode['group']) !== undefined) {
+
+                    var parentNode = findNode(nodeHierarchy, 'Group_n°' + groupId);
+                    if (!parentNode) {
+                        var length = nodeHierarchy.push({
+                            'name': 'Group_n°' + groupId,
+                            'collapsed': false,
+                            'children': []
+                        });
+                        parentNode = [];
+                        parentNode["index"] = length - 1;
+                        parentNode["object"] = nodeHierarchy[length - 1];
+                        superNodesIndexes.push(length - 1);
+                    }
+
+                    childrenNodesIndexes.push(i);
+                    parentNode["object"]['children'].push(currentNode);
+                    currentNode["parent"] = parentNode["object"];
+
+                    if (currentNode.hasOwnProperty("name")) {
+                        data.links.push({
+                            "source": parentNode["object"]["name"],
+                            "target": currentNode["name"]
+                        });
+                    } else if (currentNode.hasOwnProperty("id")) {
+                        data.links.push({
+                            "source": parentNode["object"]["id"],
+                            "target": currentNode["id"]
+                        });
+                    } else {
+                        data.links.push({
+                            "source": parentNode["index"],
+                            "target": i
+                        });
+                    }
+                }
+            }
+            return nodeHierarchy;
+        }
+
         // Loading initial sample dataset
         loadDataset("SimpleDemo");
 
@@ -260,6 +305,9 @@ block body-scripts
                             return d.name;
                         });
 
+                superNodesIndexes.forEach(function (d) {
+                    click(force.nodes()[d]);
+                });
                 // Export it using console command 'node index.js > out.svg'
                 if (typeof module !== 'undefined' && module.exports) {
                     module.exports = svg;
@@ -271,47 +319,6 @@ block body-scripts
         /*                                       D3 META-GRAPHS                                     */
         /*==========================================================================================*/
 
-        //takes JSON nodes gives (D3 group nodes + D3 standard nodes)
-        function createNodeHierarchy(data) {
-            var nodeHierarchy = data.nodes.slice(0);
-            for(var i=0; i < nodeHierarchy.length; i++) {
-                var currentNode = nodeHierarchy[i];
-                if ((groupId = currentNode['group']) !== undefined) {
-
-                    var parentNode = findNode(nodeHierarchy, 'Group n°' + groupId);
-                    if (!parentNode) {
-                        var length = nodeHierarchy.push({'name': 'Group n°' + groupId, 'collapsed': false, class:"test", 'children': []});
-                        parentNode = [];
-                        parentNode["index"] = length - 1;
-                        parentNode["object"] = nodeHierarchy[length - 1];
-                        superNodesIndexes.push(length - 1);
-                    }
-
-                    childrenNodesIndexes.push(i);
-                    parentNode["object"]['children'].push(currentNode);
-                    currentNode["parent"] = parentNode["object"];
-
-                    if(currentNode.hasOwnProperty("name")) {
-                        data.links.push({
-                            "source": parentNode["object"]["name"],
-                            "target": currentNode["name"]
-                        });
-                    } else if (currentNode.hasOwnProperty("id")) {
-                        data.links.push({
-                            "source": parentNode["object"]["id"],
-                            "target": currentNode["id"]
-                        });
-                    } else {
-                        data.links.push({
-                            "source": parentNode["index"],
-                            "target": i
-                        });
-                    }
-                }
-            }
-            return nodeHierarchy;
-        }
-
         function click(d) {
             if(d.children) {
                 d.collapsed = !d.collapsed;
@@ -319,8 +326,7 @@ block body-scripts
                 var visibility = d.collapsed ? "none" : "initial";
 
                 d.children.forEach(function (childNode) {
-                    var id = childNode.name;
-                    d3.select('#' + id.replace(".", "\\.")).transition(200).style("display", visibility);
+                    d3.select('#' + escapeId(childNode.name)).transition(200).style("display", visibility);
                 });
 
                 path

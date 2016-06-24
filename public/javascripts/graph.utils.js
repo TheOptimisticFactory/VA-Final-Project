@@ -243,3 +243,9 @@ function findNode(nodeCollection, id) {
 function inArray(value, array) {
     return array.indexOf(value) > -1;
 }
+
+function escapeId(id) {
+    var duplicate = id;
+    duplicate = duplicate.replace(" ", "");
+    return duplicate.replace(".", "\\.");
+}
