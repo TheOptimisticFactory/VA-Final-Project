@@ -51,9 +51,34 @@ While some visualisations does already exist that fit the theme like [Pack Hiera
 
 #### Screenshots ####
 
-- Main UI ![screen01alt](https://cloud.githubusercontent.com/assets/2607260/16345359/8d79eb5e-3a0f-11e6-847c-1658bc1a987a.png)
-- Neighbor Highlighting on mouse-over ![highlighting](https://cloud.githubusercontent.com/assets/2607260/16346355/d43fa664-3a14-11e6-8b78-d8fd4d8b7ad6.gif)
-- Brush selection ![brush-selection](https://cloud.githubusercontent.com/assets/2607260/16346391/096e237e-3a15-11e6-82d5-4c578c1b1d5b.gif)
-- Zoom ![zoom](https://cloud.githubusercontent.com/assets/2607260/16346396/14fdff8e-3a15-11e6-96d7-9b04e3f43ea7.gif)
-- Drag ![drag](https://cloud.githubusercontent.com/assets/2607260/16346404/26270c88-3a15-11e6-9102-884badb7cf5a.gif)
-- Loading datasets ![load](https://cloud.githubusercontent.com/assets/2607260/16346694/b92c537a-3a16-11e6-8c47-bd90d4c1e967.gif)
+##### __Main UI__ #####
+
+![screen01alt](https://cloud.githubusercontent.com/assets/2607260/16345359/8d79eb5e-3a0f-11e6-847c-1658bc1a987a.png)
+
+##### __Neighbor Highlighting on mouse-over__ #####
+ 
+![highlighting](https://cloud.githubusercontent.com/assets/2607260/16346355/d43fa664-3a14-11e6-8b78-d8fd4d8b7ad6.gif)
+
+##### __Brush selection__ ######
+
+![brush-selection](https://cloud.githubusercontent.com/assets/2607260/16346391/096e237e-3a15-11e6-82d5-4c578c1b1d5b.gif)
+
+##### __Zoom__ ######
+
+![zoom](https://cloud.githubusercontent.com/assets/2607260/16346396/14fdff8e-3a15-11e6-96d7-9b04e3f43ea7.gif)
+
+##### __Drag__ ######
+
+![drag](https://cloud.githubusercontent.com/assets/2607260/16346404/26270c88-3a15-11e6-9102-884badb7cf5a.gif)
+
+##### __Loading datasets__ ######
+
+![load](https://cloud.githubusercontent.com/assets/2607260/16346805/415aa67a-3a17-11e6-9ab3-ee543d9f7492.gif)
+
+##### __Toggle setting menu__ ######
+ 
+![settings](https://cloud.githubusercontent.com/assets/2607260/16346850/7d639d2a-3a17-11e6-8fd2-b8db3293a1aa.gif)
+
+##### __Dynamic updates of simulation settings__ ######
+ 
+![dynamics](https://cloud.githubusercontent.com/assets/2607260/16346947/0c0aa6cc-3a18-11e6-9cbb-95750becc11d.gif)
