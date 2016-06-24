@@ -227,14 +227,13 @@ function keyup() {
     shiftKey = d3.event.shiftKey || d3.event.metaKey;
 }
 
-function findNode(id) {
-    var forceNodes = force.nodes();
+function findNode(nodeCollection, id) {
     var node = [];
 
-    for (var i in forceNodes) {
-        if(forceNodes[i]["name"] == id || forceNodes[i]["id"] == id) {
+    for (var i in nodeCollection) {
+        if(nodeCollection[i]["name"] == id || nodeCollection[i]["id"] == id) {
             node["index"] = i;
-            node["object"] = forceNodes[i];
+            node["object"] = nodeCollection[i];
             return node;
         }
     }

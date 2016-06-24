@@ -176,7 +176,7 @@ block body-scripts
                         .on("brushend", brushEndFunction)
                 );
 
-                nodes = createNodeHierarchy(data.nodes);
+                nodes = createNodeHierarchy(data);
 
                 force = d3.layout.force()
                         .nodes(nodes)
@@ -189,15 +189,15 @@ block body-scripts
                         .on("tick", tick);
 
                 data.links.forEach(function (link) {
-                    var source = findNode(link.source),
-                        target = findNode(link.target);
+                    var source = findNode(force.nodes(), link.source);
+                    var target = findNode(force.nodes(), link.target);
 
                     if (source !== null && target != null) {
                         force.links().push({
                             "source": source["object"],
                             "target": target["object"]
                         });
-                        linkedByIndex[source["index"] + "," + source["target"]] = true;
+                        linkedByIndex[source["index"] + "," + target["index"]] = true;
                     } else if(Number.isInteger(link.source) && Number.isInteger(link.target)) {
                         force.links().push({
                             "source": link.source,
@@ -270,19 +270,37 @@ block body-scripts
         /*==========================================================================================*/
 
         //takes JSON nodes gives (D3 group nodes + D3 standard nodes)
-        function createNodeHierarchy(nodes) {
-            var nodeHierarchy = nodes.slice(0);
-            for(var i=0; i<nodes.length; i++) {
+        function createNodeHierarchy(data) {
+            var nodeHierarchy = data.nodes.slice(0);
+            for(var i=0; i < nodeHierarchy.length; i++) {
                 var currentNode = nodeHierarchy[i];
                 if ((groupId = currentNode['group']) !== undefined) {
-                    var parentNode = nodeHierarchy.find(function (obj) {
-                        return obj.name === 'Group n°' + groupId;
-                    });
+
+                    var parentNode = findNode(nodeHierarchy, 'Group n°' + groupId);
                     if (!parentNode) {
                         var length = nodeHierarchy.push({'name': 'Group n°' + groupId, 'children': []});
-                        parentNode = nodeHierarchy[length - 1];
+                        parentNode = [];
+                        parentNode["index"] = length - 1;
+                        parentNode["object"] = nodeHierarchy[length - 1];
                     }
-                    parentNode['children'].push(currentNode);
+
+                    parentNode["object"]['children'].push(currentNode);
+
+                    if(currentNode.hasOwnProperty("name")) {
+                        data.links.push({
+                            "source": parentNode["object"]["name"],
+                            "target": currentNode["name"]
+                        });
+                    } else if (currentNode.hasOwnProperty("id")) {
+                        data.links.push({
+                            "source": parentNode["object"]["id"],
+                            "target": currentNode["id"]
+                        });
+                    } else {
+                        data.links.push({
+                            "source": parentNode["index"],
+                            "target": i});
+                    }
                 }
             }
             return nodeHierarchy;
