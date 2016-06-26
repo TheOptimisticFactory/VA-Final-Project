@@ -32,6 +32,27 @@ While some visualisations does already exist that fit the theme like [Pack Hiera
 - [Stylus](http://stylus-lang.com/), an very intuive and simple CSS preprocessor 
 - External JavaScript libraries used: [JQuery](https://jquery.com/), [JQueryUI](https://jqueryui.com/), [Bootstrap 3](http://getbootstrap.com/), [FontAwesome](http://fontawesome.io/)
 
+#### Core files ###
+
+The main application logic is divided into 2 different files :
+
+- [Index.jade](https://github.com/JoeTheFkingFrypan/VA-Final-Project/blob/master/views/index.jade)
+- [Graph.utils.js](https://github.com/JoeTheFkingFrypan/VA-Final-Project/blob/master/public/javascripts/graph.utils.js)
+
+Available datasets are located in [public/json](https://github.com/JoeTheFkingFrypan/VA-Final-Project/tree/master/public/json)
+
+#### How to run the application ####
+
+1. Download and install [NodeJS](https://nodejs.org/en/)
+2. Donwload the [latest snapshot of our application](https://github.com/JoeTheFkingFrypan/VA-Final-Project/archive/master.zip)
+3. Extract the source code into the directory of your choosing (for example `E:\Dev\Workspace\VA-Final-Project`)
+4. Open a command prompt (`bash/shell` on UNIX or `cmd` on Windows)
+5. Navigate to the directory where you've extracted the sources (for example ` cd E:\Dev\Workspace\VA-Final-Project`)
+6. From that directory, run the command `npm start`
+7. Open your web browser and load the page [localhost:3000](localhost:3000)
+
+![start](https://cloud.githubusercontent.com/assets/2607260/16365521/45880cdc-3bd0-11e6-9100-5a279a06ea7e.gif)
+
 #### Current state of features ####
 
 - [x] Basic graph representation (vectorial nodes & edges)
