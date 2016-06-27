@@ -72,6 +72,12 @@ Available datasets are located in [public/json](https://github.com/JoeTheFkingFr
 
 #### Screenshots ####
 
+__DISCLAIMER__ Please keep in mind the following __animated pictures__ are GIFS recorded at 33 fps (frames per second) using a quantization image processing. While the resulting quality of the images is descent enough, some of them may contain some __visual artifacts__ which do not represent what the actual render would be 
+
+*For instance, both brush selection and zoom features are working just fine, the image just happen to have trailing pixels.*
+
+For a __genuine and artifact-free experience__, you might want to consider running the project on your computer by following the steps described in the section `How to run the application`
+
 ##### __Main UI__ #####
 
 ![screen01alt](https://cloud.githubusercontent.com/assets/2607260/16345359/8d79eb5e-3a0f-11e6-847c-1658bc1a987a.png)
