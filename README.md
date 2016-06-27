@@ -7,11 +7,11 @@
 
 #### Background ####
 
-D3.js is a technology writen in JavaScript capable of transforming raw data into usable information in an almost infinite number of ways. The beauty of D3.js lies within its ability to create all kinds of graphical representation, from the basic pie-chart, to geomaping, the is not any real limit to what you can do with it, only your imagination. 
+D3.js is a technology writen in JavaScript capable of transforming raw data into usable information in an almost infinite number of ways. The beauty of D3.js lies within its ability to create all kinds of graphical representation, from the basic pie-chart, to geomaping, there is not any real limit to what you can do with it, only your imagination. 
 
 What makes it particularly attractive (and good-looking) are animations. Static data is plain boring. It is much more interesting when you can actually play with the data, move through it as you see fit, change settings so it better suit your taste. This is one of the biggest pros of D3.js : pretty much everything can be animated (size of the elements, their color, their postition, etc).
 
-As far as we're aware, there aren't many visualisations based on D3 in the theme of meta-graphs. Meta-graphs are like any other graph, except they are multi-layered : each node is a graph, containing at least a single node. The following example illustrates what is a one-layered meta-graph. There are 3 super-nodes (represented as colored squares), each of them containing a certain amount of children nodes. This is example is very simple, but the concept can go further than this, as children nodes could have graphs themselves, creating a N-layered graph.
+As far as we're aware, there aren't many visualisations based on D3 in the theme of meta-graphs. Meta-graphs are like any other graph, except they are multi-layered : each node is a graph, containing at least a single node. The following example illustrates what is a one-layered meta-graph. There are 3 super-nodes (represented as colored squares), each of them containing a certain amount of children nodes. This example is very simple, but the concept can go further than this, as children nodes could have graphs themselves, creating a N-layered graph.
 
 ![poc-01](https://cloud.githubusercontent.com/assets/2607260/16344929/314cce70-3a0d-11e6-93b6-00741cc0ec94.png)
 
