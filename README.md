@@ -109,3 +109,8 @@ For a __genuine and artifact-free experience__, you might want to consider runni
 ##### __Dynamic updates of simulation settings__ ######
  
 ![dynamics](https://cloud.githubusercontent.com/assets/2607260/16346947/0c0aa6cc-3a18-11e6-9cbb-95750becc11d.gif)
+
+##### __Supernode collapse & expansion__ ######
+
+![collapsealt2](https://cloud.githubusercontent.com/assets/2607260/16381763/0779ac12-3c4c-11e6-9949-2460f716bc74.gif)
+![collapsealt](https://cloud.githubusercontent.com/assets/2607260/16381762/077895fc-3c4c-11e6-827c-6a0a109af8e7.gif)
